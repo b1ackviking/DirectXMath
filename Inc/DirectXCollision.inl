@@ -9,7 +9,7 @@
 
 #pragma once
 
-XMGLOBALCONST XMVECTORF32 g_BoxOffset[8] =
+constexpr XMVECTORF32 g_BoxOffset[8] =
 {
     { { { -1.0f, -1.0f,  1.0f, 0.0f } } },
     { { {  1.0f, -1.0f,  1.0f, 0.0f } } },
@@ -21,10 +21,10 @@ XMGLOBALCONST XMVECTORF32 g_BoxOffset[8] =
     { { { -1.0f,  1.0f, -1.0f, 0.0f } } },
 };
 
-XMGLOBALCONST XMVECTORF32 g_RayEpsilon    = { { { 1e-20f, 1e-20f, 1e-20f, 1e-20f } } };
-XMGLOBALCONST XMVECTORF32 g_RayNegEpsilon = { { { -1e-20f, -1e-20f, -1e-20f, -1e-20f } } };
-XMGLOBALCONST XMVECTORF32 g_FltMin        = { { { -FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX } } };
-XMGLOBALCONST XMVECTORF32 g_FltMax        = { { { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX } } };
+constexpr XMVECTORF32 g_RayEpsilon    = { { { 1e-20f, 1e-20f, 1e-20f, 1e-20f } } };
+constexpr XMVECTORF32 g_RayNegEpsilon = { { { -1e-20f, -1e-20f, -1e-20f, -1e-20f } } };
+constexpr XMVECTORF32 g_FltMin        = { { { -FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX } } };
+constexpr XMVECTORF32 g_FltMax        = { { { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX } } };
 
 namespace Internal
 {
@@ -56,9 +56,9 @@ inline bool XMVector3AllTrue( _In_ FXMVECTOR V )
 
 #if defined(_PREFAST_) || !defined(NDEBUG)
 
-XMGLOBALCONST XMVECTORF32 g_UnitVectorEpsilon     = { { { 1.0e-4f, 1.0e-4f, 1.0e-4f, 1.0e-4f } } };
-XMGLOBALCONST XMVECTORF32 g_UnitQuaternionEpsilon = { { { 1.0e-4f, 1.0e-4f, 1.0e-4f, 1.0e-4f } } };
-XMGLOBALCONST XMVECTORF32 g_UnitPlaneEpsilon      = { { { 1.0e-4f, 1.0e-4f, 1.0e-4f, 1.0e-4f } } };
+constexpr XMVECTORF32 g_UnitVectorEpsilon     = { { { 1.0e-4f, 1.0e-4f, 1.0e-4f, 1.0e-4f } } };
+constexpr XMVECTORF32 g_UnitQuaternionEpsilon = { { { 1.0e-4f, 1.0e-4f, 1.0e-4f, 1.0e-4f } } };
+constexpr XMVECTORF32 g_UnitPlaneEpsilon      = { { { 1.0e-4f, 1.0e-4f, 1.0e-4f, 1.0e-4f } } };
 
 //-----------------------------------------------------------------------------
 // Return true if the vector is a unit vector (length == 1).

@@ -1206,7 +1206,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3PK
 {
     assert(pSource);
 
-    __declspec(align(16)) uint32_t Result[4];
+    alignas(16) uint32_t Result[4];
     uint32_t Mantissa;
     uint32_t Exponent;
 
@@ -1570,6 +1570,10 @@ inline XMVECTOR XM_CALLCONV XMLoadXDecN4
 #pragma warning(push)
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 _Use_decl_annotations_
 inline XMVECTOR XM_CALLCONV XMLoadXDec4
@@ -1620,6 +1624,9 @@ inline XMVECTOR XM_CALLCONV XMLoadXDec4
 #endif
 }
 
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #pragma warning(pop)
 
 //------------------------------------------------------------------------------
@@ -1769,6 +1776,10 @@ inline XMVECTOR XM_CALLCONV XMLoadUDec4
 #pragma warning(push)
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 _Use_decl_annotations_
 inline XMVECTOR XM_CALLCONV XMLoadDecN4
@@ -1869,6 +1880,9 @@ inline XMVECTOR XM_CALLCONV XMLoadDec4
 #endif
 }
 
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #pragma warning(pop)
 
 //------------------------------------------------------------------------------
@@ -2580,7 +2594,7 @@ inline void XM_CALLCONV XMStoreFloat3PK
 {
     assert(pDestination);
 
-    __declspec(align(16)) uint32_t IValue[4];
+    alignas(16) uint32_t IValue[4];
     XMStoreFloat3A( reinterpret_cast<XMFLOAT3A*>(&IValue), V );
 
     uint32_t Result[3];
@@ -2993,6 +3007,10 @@ inline void XM_CALLCONV XMStoreXDecN4
 #pragma warning(push)
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreXDec4
@@ -3061,6 +3079,9 @@ inline void XM_CALLCONV XMStoreXDec4
 #endif
 }
 
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #pragma warning(pop)
 
 //------------------------------------------------------------------------------
@@ -3276,6 +3297,10 @@ inline void XM_CALLCONV XMStoreUDec4
 #pragma warning(push)
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreDecN4
@@ -3398,6 +3423,9 @@ inline void XM_CALLCONV XMStoreDec4
 #endif
 }
 
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #pragma warning(pop)
 
 //------------------------------------------------------------------------------
@@ -4273,6 +4301,10 @@ inline XMXDECN4::XMXDECN4
 #pragma warning(push)
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -4355,6 +4387,9 @@ inline XMDEC4::XMDEC4
     XMStoreDec4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
 
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #pragma warning(pop)
 
 /****************************************************************************

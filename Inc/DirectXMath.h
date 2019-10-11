@@ -25,20 +25,10 @@
 
 #if _XM_VECTORCALL_
 #define XM_CALLCONV __vectorcall
-#else
+#elif !defined(__GNUC__)
 #define XM_CALLCONV __fastcall
-#endif
-
-#if defined(_MSC_VER) && (_MSC_FULL_VER < 190023506)
-#define XM_CONST const
-#define XM_CONSTEXPR
 #else
-#define XM_CONST constexpr
-#define XM_CONSTEXPR constexpr
-#endif
-
-#ifndef XM_DEPRECATED
-#define XM_DEPRECATED __declspec(deprecated("This is deprecated and will be removed in a future version."))
+#define XM_CALLCONV
 #endif
 
 #if !defined(_XM_AVX2_INTRINSICS_) && defined(__AVX2__) && !defined(_XM_NO_INTRINSICS_)
@@ -84,14 +74,14 @@
 #if !defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 #if (defined(_M_IX86) || defined(_M_X64) || __i386__ || __x86_64__) && !defined(_M_HYBRID_X86_ARM64)
 #define _XM_SSE_INTRINSICS_
-#elif defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __arm__ || __aarch64__
+#elif (defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __arm__ || __aarch64__) && !defined(__GNUC__)
 #define _XM_ARM_NEON_INTRINSICS_
 #elif !defined(_XM_NO_INTRINSICS_)
 #error DirectX Math does not support this target
 #endif
 #endif // !_XM_ARM_NEON_INTRINSICS_ && !_XM_SSE_INTRINSICS_ && !_XM_NO_INTRINSICS_
 
-#if !defined(_XM_NO_XMVECTOR_OVERLOADS_) && defined(__clang__)
+#if !defined(_XM_NO_XMVECTOR_OVERLOADS_) && (defined(__clang__) || defined(__GNUC__))
 #define _XM_NO_XMVECTOR_OVERLOADS_
 #endif
 
@@ -112,7 +102,7 @@
 #pragma warning(pop)
 #endif
 
-#if defined(__clang__) && (__x86_64__ || __i386__)
+#if (defined(__clang__) || defined(__GNUC__)) && (__x86_64__ || __i386__)
 #include <cpuid.h>
 #endif
 
@@ -141,7 +131,26 @@
 #endif
 #endif // !_XM_NO_INTRINSICS_
 
+#ifdef _MSC_VER
 #include "sal.h"
+#else
+#define _In_
+#define _In_z_
+#define _Inout_
+#define _In_opt_
+#define _In_reads_(x)
+#define _In_reads_opt_(x)
+#define _In_reads_bytes_(x)
+#define _Inout_updates_(x)
+#define _Out_
+#define _Out_opt_
+#define _Out_writes_(x)
+#define _Out_writes_opt_(x)
+#define _Out_writes_bytes_(x)
+#define _Success_(x)
+#define _Analysis_assume_(x)
+#define _Use_decl_annotations_
+#endif
 #include <assert.h>
 
 #pragma warning(push)
@@ -219,36 +228,36 @@ namespace DirectX
 #undef XM_CACHE_LINE_SIZE
 #endif
 
-XM_CONST float XM_PI        = 3.141592654f;
-XM_CONST float XM_2PI       = 6.283185307f;
-XM_CONST float XM_1DIVPI    = 0.318309886f;
-XM_CONST float XM_1DIV2PI   = 0.159154943f;
-XM_CONST float XM_PIDIV2    = 1.570796327f;
-XM_CONST float XM_PIDIV4    = 0.785398163f;
+constexpr float XM_PI        = 3.141592654f;
+constexpr float XM_2PI       = 6.283185307f;
+constexpr float XM_1DIVPI    = 0.318309886f;
+constexpr float XM_1DIV2PI   = 0.159154943f;
+constexpr float XM_PIDIV2    = 1.570796327f;
+constexpr float XM_PIDIV4    = 0.785398163f;
 
-XM_CONST uint32_t XM_SELECT_0   = 0x00000000;
-XM_CONST uint32_t XM_SELECT_1   = 0xFFFFFFFF;
+constexpr uint32_t XM_SELECT_0   = 0x00000000;
+constexpr uint32_t XM_SELECT_1   = 0xFFFFFFFF;
 
-XM_CONST uint32_t XM_PERMUTE_0X = 0;
-XM_CONST uint32_t XM_PERMUTE_0Y = 1;
-XM_CONST uint32_t XM_PERMUTE_0Z = 2;
-XM_CONST uint32_t XM_PERMUTE_0W = 3;
-XM_CONST uint32_t XM_PERMUTE_1X = 4;
-XM_CONST uint32_t XM_PERMUTE_1Y = 5;
-XM_CONST uint32_t XM_PERMUTE_1Z = 6;
-XM_CONST uint32_t XM_PERMUTE_1W = 7;
+constexpr uint32_t XM_PERMUTE_0X = 0;
+constexpr uint32_t XM_PERMUTE_0Y = 1;
+constexpr uint32_t XM_PERMUTE_0Z = 2;
+constexpr uint32_t XM_PERMUTE_0W = 3;
+constexpr uint32_t XM_PERMUTE_1X = 4;
+constexpr uint32_t XM_PERMUTE_1Y = 5;
+constexpr uint32_t XM_PERMUTE_1Z = 6;
+constexpr uint32_t XM_PERMUTE_1W = 7;
 
-XM_CONST uint32_t XM_SWIZZLE_X  = 0;
-XM_CONST uint32_t XM_SWIZZLE_Y  = 1;
-XM_CONST uint32_t XM_SWIZZLE_Z  = 2;
-XM_CONST uint32_t XM_SWIZZLE_W  = 3;
+constexpr uint32_t XM_SWIZZLE_X  = 0;
+constexpr uint32_t XM_SWIZZLE_Y  = 1;
+constexpr uint32_t XM_SWIZZLE_Z  = 2;
+constexpr uint32_t XM_SWIZZLE_W  = 3;
 
-XM_CONST uint32_t XM_CRMASK_CR6         = 0x000000F0;
-XM_CONST uint32_t XM_CRMASK_CR6TRUE     = 0x00000080;
-XM_CONST uint32_t XM_CRMASK_CR6FALSE    = 0x00000020;
-XM_CONST uint32_t XM_CRMASK_CR6BOUNDS   = XM_CRMASK_CR6FALSE;
+constexpr uint32_t XM_CRMASK_CR6         = 0x000000F0;
+constexpr uint32_t XM_CRMASK_CR6TRUE     = 0x00000080;
+constexpr uint32_t XM_CRMASK_CR6FALSE    = 0x00000020;
+constexpr uint32_t XM_CRMASK_CR6BOUNDS   = XM_CRMASK_CR6FALSE;
 
-XM_CONST size_t XM_CACHE_LINE_SIZE = 64;
+constexpr size_t XM_CACHE_LINE_SIZE = 64;
 
 
 /****************************************************************************
@@ -269,8 +278,8 @@ XM_CONST size_t XM_CACHE_LINE_SIZE = 64;
 
 // Unit conversion
 
-inline XM_CONSTEXPR float XMConvertToRadians(float fDegrees) { return fDegrees * (XM_PI / 180.0f); }
-inline XM_CONSTEXPR float XMConvertToDegrees(float fRadians) { return fRadians * (180.0f / XM_PI); }
+inline constexpr float XMConvertToRadians(float fDegrees) { return fDegrees * (XM_PI / 180.0f); }
+inline constexpr float XMConvertToDegrees(float fRadians) { return fRadians * (180.0f / XM_PI); }
 
 // Condition register evaluation proceeding a recording (R) comparison
 
@@ -350,7 +359,7 @@ typedef const XMVECTOR& CXMVECTOR;
 
 //------------------------------------------------------------------------------
 // Conversion types for constants
-__declspec(align(16)) struct XMVECTORF32
+struct alignas(16) XMVECTORF32
 {
     union
     {
@@ -366,7 +375,7 @@ __declspec(align(16)) struct XMVECTORF32
 #endif
 };
 
-__declspec(align(16)) struct XMVECTORI32
+struct alignas(16) XMVECTORI32
 {
     union
     {
@@ -381,7 +390,7 @@ __declspec(align(16)) struct XMVECTORI32
 #endif
 };
 
-__declspec(align(16)) struct XMVECTORU8
+struct alignas(16) XMVECTORU8
 {
     union
     {
@@ -396,7 +405,7 @@ __declspec(align(16)) struct XMVECTORU8
 #endif
 };
 
-__declspec(align(16)) struct XMVECTORU32
+struct alignas(16) XMVECTORU32
 {
     union
     {
@@ -454,7 +463,7 @@ typedef const XMMATRIX& CXMMATRIX;
 #ifdef _XM_NO_INTRINSICS_
 struct XMMATRIX
 #else
-__declspec(align(16)) struct XMMATRIX
+struct alignas(16) XMMATRIX
 #endif
 {
 #ifdef _XM_NO_INTRINSICS_
@@ -532,12 +541,12 @@ struct XMFLOAT2
     XMFLOAT2(XMFLOAT2&&) = default;
     XMFLOAT2& operator=(XMFLOAT2&&) = default;
 
-    XM_CONSTEXPR XMFLOAT2(float _x, float _y) : x(_x), y(_y) {}
+    constexpr XMFLOAT2(float _x, float _y) : x(_x), y(_y) {}
     explicit XMFLOAT2(_In_reads_(2) const float *pArray) : x(pArray[0]), y(pArray[1]) {}
 };
 
 // 2D Vector; 32 bit floating point components aligned on a 16 byte boundary
-__declspec(align(16)) struct XMFLOAT2A : public XMFLOAT2
+struct alignas(16) XMFLOAT2A : public XMFLOAT2
 {
     XMFLOAT2A() = default;
 
@@ -547,7 +556,7 @@ __declspec(align(16)) struct XMFLOAT2A : public XMFLOAT2
     XMFLOAT2A(XMFLOAT2A&&) = default;
     XMFLOAT2A& operator=(XMFLOAT2A&&) = default;
 
-    XM_CONSTEXPR XMFLOAT2A(float _x, float _y) : XMFLOAT2(_x, _y) {}
+    constexpr XMFLOAT2A(float _x, float _y) : XMFLOAT2(_x, _y) {}
     explicit XMFLOAT2A(_In_reads_(2) const float *pArray) : XMFLOAT2(pArray) {}
 };
 
@@ -566,7 +575,7 @@ struct XMINT2
     XMINT2(XMINT2&&) = default;
     XMINT2& operator=(XMINT2&&) = default;
 
-    XM_CONSTEXPR XMINT2(int32_t _x, int32_t _y) : x(_x), y(_y) {}
+    constexpr XMINT2(int32_t _x, int32_t _y) : x(_x), y(_y) {}
     explicit XMINT2(_In_reads_(2) const int32_t *pArray) : x(pArray[0]), y(pArray[1]) {}
 };
 
@@ -584,7 +593,7 @@ struct XMUINT2
     XMUINT2(XMUINT2&&) = default;
     XMUINT2& operator=(XMUINT2&&) = default;
 
-    XM_CONSTEXPR XMUINT2(uint32_t _x, uint32_t _y) : x(_x), y(_y) {}
+    constexpr XMUINT2(uint32_t _x, uint32_t _y) : x(_x), y(_y) {}
     explicit XMUINT2(_In_reads_(2) const uint32_t *pArray) : x(pArray[0]), y(pArray[1]) {}
 };
 
@@ -604,12 +613,12 @@ struct XMFLOAT3
     XMFLOAT3(XMFLOAT3&&) = default;
     XMFLOAT3& operator=(XMFLOAT3&&) = default;
 
-    XM_CONSTEXPR XMFLOAT3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
+    constexpr XMFLOAT3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
     explicit XMFLOAT3(_In_reads_(3) const float *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 };
 
 // 3D Vector; 32 bit floating point components aligned on a 16 byte boundary
-__declspec(align(16)) struct XMFLOAT3A : public XMFLOAT3
+struct alignas(16) XMFLOAT3A : public XMFLOAT3
 {
     XMFLOAT3A() = default;
 
@@ -619,7 +628,7 @@ __declspec(align(16)) struct XMFLOAT3A : public XMFLOAT3
     XMFLOAT3A(XMFLOAT3A&&) = default;
     XMFLOAT3A& operator=(XMFLOAT3A&&) = default;
 
-    XM_CONSTEXPR XMFLOAT3A(float _x, float _y, float _z) : XMFLOAT3(_x, _y, _z) {}
+    constexpr XMFLOAT3A(float _x, float _y, float _z) : XMFLOAT3(_x, _y, _z) {}
     explicit XMFLOAT3A(_In_reads_(3) const float *pArray) : XMFLOAT3(pArray) {}
 };
 
@@ -639,7 +648,7 @@ struct XMINT3
     XMINT3(XMINT3&&) = default;
     XMINT3& operator=(XMINT3&&) = default;
 
-    XM_CONSTEXPR XMINT3(int32_t _x, int32_t _y, int32_t _z) : x(_x), y(_y), z(_z) {}
+    constexpr XMINT3(int32_t _x, int32_t _y, int32_t _z) : x(_x), y(_y), z(_z) {}
     explicit XMINT3(_In_reads_(3) const int32_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 };
 
@@ -658,7 +667,7 @@ struct XMUINT3
     XMUINT3(XMUINT3&&) = default;
     XMUINT3& operator=(XMUINT3&&) = default;
 
-    XM_CONSTEXPR XMUINT3(uint32_t _x, uint32_t _y, uint32_t _z) : x(_x), y(_y), z(_z) {}
+    constexpr XMUINT3(uint32_t _x, uint32_t _y, uint32_t _z) : x(_x), y(_y), z(_z) {}
     explicit XMUINT3(_In_reads_(3) const uint32_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 };
 
@@ -679,12 +688,12 @@ struct XMFLOAT4
     XMFLOAT4(XMFLOAT4&&) = default;
     XMFLOAT4& operator=(XMFLOAT4&&) = default;
 
-    XM_CONSTEXPR XMFLOAT4(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {}
+    constexpr XMFLOAT4(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMFLOAT4(_In_reads_(4) const float *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 };
 
 // 4D Vector; 32 bit floating point components aligned on a 16 byte boundary
-__declspec(align(16)) struct XMFLOAT4A : public XMFLOAT4
+struct alignas(16) XMFLOAT4A : public XMFLOAT4
 {
     XMFLOAT4A() = default;
 
@@ -694,7 +703,7 @@ __declspec(align(16)) struct XMFLOAT4A : public XMFLOAT4
     XMFLOAT4A(XMFLOAT4A&&) = default;
     XMFLOAT4A& operator=(XMFLOAT4A&&) = default;
 
-    XM_CONSTEXPR XMFLOAT4A(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
+    constexpr XMFLOAT4A(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
     explicit XMFLOAT4A(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
 };
 
@@ -715,7 +724,7 @@ struct XMINT4
     XMINT4(XMINT4&&) = default;
     XMINT4& operator=(XMINT4&&) = default;
 
-    XM_CONSTEXPR XMINT4(int32_t _x, int32_t _y, int32_t _z, int32_t _w) : x(_x), y(_y), z(_z), w(_w) {}
+    constexpr XMINT4(int32_t _x, int32_t _y, int32_t _z, int32_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMINT4(_In_reads_(4) const int32_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 };
 
@@ -735,7 +744,7 @@ struct XMUINT4
     XMUINT4(XMUINT4&&) = default;
     XMUINT4& operator=(XMUINT4&&) = default;
 
-    XM_CONSTEXPR XMUINT4(uint32_t _x, uint32_t _y, uint32_t _z, uint32_t _w) : x(_x), y(_y), z(_z), w(_w) {}
+    constexpr XMUINT4(uint32_t _x, uint32_t _y, uint32_t _z, uint32_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMUINT4(_In_reads_(4) const uint32_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 };
 
@@ -762,7 +771,7 @@ struct XMFLOAT3X3
     XMFLOAT3X3(XMFLOAT3X3&&) = default;
     XMFLOAT3X3& operator=(XMFLOAT3X3&&) = default;
 
-    XM_CONSTEXPR XMFLOAT3X3(float m00, float m01, float m02,
+    constexpr XMFLOAT3X3(float m00, float m01, float m02,
                             float m10, float m11, float m12,
                             float m20, float m21, float m22)
         : _11(m00), _12(m01), _13(m02),
@@ -799,7 +808,7 @@ struct XMFLOAT4X3
     XMFLOAT4X3(XMFLOAT4X3&&) = default;
     XMFLOAT4X3& operator=(XMFLOAT4X3&&) = default;
 
-    XM_CONSTEXPR XMFLOAT4X3(float m00, float m01, float m02,
+    constexpr XMFLOAT4X3(float m00, float m01, float m02,
                             float m10, float m11, float m12,
                             float m20, float m21, float m22,
                             float m30, float m31, float m32)
@@ -814,7 +823,7 @@ struct XMFLOAT4X3
 };
 
 // 4x3 Row-major Matrix: 32 bit floating point components aligned on a 16 byte boundary
-__declspec(align(16)) struct XMFLOAT4X3A : public XMFLOAT4X3
+struct alignas(16) XMFLOAT4X3A : public XMFLOAT4X3
 {
     XMFLOAT4X3A() = default;
 
@@ -824,7 +833,7 @@ __declspec(align(16)) struct XMFLOAT4X3A : public XMFLOAT4X3
     XMFLOAT4X3A(XMFLOAT4X3A&&) = default;
     XMFLOAT4X3A& operator=(XMFLOAT4X3A&&) = default;
 
-    XM_CONSTEXPR XMFLOAT4X3A(float m00, float m01, float m02,
+    constexpr XMFLOAT4X3A(float m00, float m01, float m02,
                             float m10, float m11, float m12,
                             float m20, float m21, float m22,
                             float m30, float m31, float m32) :
@@ -856,7 +865,7 @@ struct XMFLOAT3X4
     XMFLOAT3X4(XMFLOAT3X4&&) = default;
     XMFLOAT3X4& operator=(XMFLOAT3X4&&) = default;
 
-    XM_CONSTEXPR XMFLOAT3X4(float m00, float m01, float m02, float m03,
+    constexpr XMFLOAT3X4(float m00, float m01, float m02, float m03,
                             float m10, float m11, float m12, float m13,
                             float m20, float m21, float m22, float m23)
         : _11(m00), _12(m01), _13(m02), _14(m03),
@@ -869,7 +878,7 @@ struct XMFLOAT3X4
 };
 
 // 3x4 Column-major Matrix: 32 bit floating point components aligned on a 16 byte boundary
-__declspec(align(16)) struct XMFLOAT3X4A : public XMFLOAT3X4
+struct alignas(16) XMFLOAT3X4A : public XMFLOAT3X4
 {
     XMFLOAT3X4A() = default;
 
@@ -879,7 +888,7 @@ __declspec(align(16)) struct XMFLOAT3X4A : public XMFLOAT3X4
     XMFLOAT3X4A(XMFLOAT3X4A&&) = default;
     XMFLOAT3X4A& operator=(XMFLOAT3X4A&&) = default;
 
-    XM_CONSTEXPR XMFLOAT3X4A(float m00, float m01, float m02, float m03,
+    constexpr XMFLOAT3X4A(float m00, float m01, float m02, float m03,
                              float m10, float m11, float m12, float m13,
                              float m20, float m21, float m22, float m23) :
         XMFLOAT3X4(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23) {}
@@ -910,7 +919,7 @@ struct XMFLOAT4X4
     XMFLOAT4X4(XMFLOAT4X4&&) = default;
     XMFLOAT4X4& operator=(XMFLOAT4X4&&) = default;
 
-    XM_CONSTEXPR XMFLOAT4X4(float m00, float m01, float m02, float m03,
+    constexpr XMFLOAT4X4(float m00, float m01, float m02, float m03,
                             float m10, float m11, float m12, float m13,
                             float m20, float m21, float m22, float m23,
                             float m30, float m31, float m32, float m33)
@@ -925,7 +934,7 @@ struct XMFLOAT4X4
 };
 
 // 4x4 Matrix: 32 bit floating point components aligned on a 16 byte boundary
-__declspec(align(16)) struct XMFLOAT4X4A : public XMFLOAT4X4
+struct alignas(16) XMFLOAT4X4A : public XMFLOAT4X4
 {
     XMFLOAT4X4A() = default;
 
@@ -935,7 +944,7 @@ __declspec(align(16)) struct XMFLOAT4X4A : public XMFLOAT4X4
     XMFLOAT4X4A(XMFLOAT4X4A&&) = default;
     XMFLOAT4X4A& operator=(XMFLOAT4X4A&&) = default;
 
-    XM_CONSTEXPR XMFLOAT4X4A(float m00, float m01, float m02, float m03,
+    constexpr XMFLOAT4X4A(float m00, float m01, float m02, float m03,
                              float m10, float m11, float m12, float m13,
                              float m20, float m21, float m22, float m23,
                              float m30, float m31, float m32, float m33)
@@ -1904,150 +1913,146 @@ template<uint32_t VSLeftRotateElements, uint32_t Select0, uint32_t Select1, uint
 // times in a function, but if the constant is used (and declared) in a
 // separate math routine it would be reloaded.
 
-#ifndef XMGLOBALCONST
-#define XMGLOBALCONST extern const __declspec(selectany)
-#endif
-
-XMGLOBALCONST XMVECTORF32 g_XMSinCoefficients0      = { { { -0.16666667f, +0.0083333310f, -0.00019840874f, +2.7525562e-06f } } };
-XMGLOBALCONST XMVECTORF32 g_XMSinCoefficients1      = { { { -2.3889859e-08f, -0.16665852f /*Est1*/, +0.0083139502f /*Est2*/, -0.00018524670f /*Est3*/ } } };
-XMGLOBALCONST XMVECTORF32 g_XMCosCoefficients0      = { { { -0.5f, +0.041666638f, -0.0013888378f, +2.4760495e-05f } } };
-XMGLOBALCONST XMVECTORF32 g_XMCosCoefficients1      = { { { -2.6051615e-07f, -0.49992746f /*Est1*/, +0.041493919f /*Est2*/, -0.0012712436f /*Est3*/ } } };
-XMGLOBALCONST XMVECTORF32 g_XMTanCoefficients0      = { { { 1.0f, 0.333333333f, 0.133333333f, 5.396825397e-2f } } };
-XMGLOBALCONST XMVECTORF32 g_XMTanCoefficients1      = { { { 2.186948854e-2f, 8.863235530e-3f, 3.592128167e-3f, 1.455834485e-3f } } };
-XMGLOBALCONST XMVECTORF32 g_XMTanCoefficients2      = { { { 5.900274264e-4f, 2.391290764e-4f, 9.691537707e-5f, 3.927832950e-5f } } };
-XMGLOBALCONST XMVECTORF32 g_XMArcCoefficients0      = { { { +1.5707963050f, -0.2145988016f, +0.0889789874f, -0.0501743046f } } };
-XMGLOBALCONST XMVECTORF32 g_XMArcCoefficients1      = { { { +0.0308918810f, -0.0170881256f, +0.0066700901f, -0.0012624911f } } };
-XMGLOBALCONST XMVECTORF32 g_XMATanCoefficients0     = { { { -0.3333314528f, +0.1999355085f, -0.1420889944f, +0.1065626393f } } };
-XMGLOBALCONST XMVECTORF32 g_XMATanCoefficients1     = { { { -0.0752896400f, +0.0429096138f, -0.0161657367f, +0.0028662257f } } };
-XMGLOBALCONST XMVECTORF32 g_XMATanEstCoefficients0  = { { { +0.999866f, +0.999866f, +0.999866f, +0.999866f } } };
-XMGLOBALCONST XMVECTORF32 g_XMATanEstCoefficients1  = { { { -0.3302995f, +0.180141f, -0.085133f, +0.0208351f } } };
-XMGLOBALCONST XMVECTORF32 g_XMTanEstCoefficients    = { { { 2.484f, -1.954923183e-1f, 2.467401101f, XM_1DIVPI } } };
-XMGLOBALCONST XMVECTORF32 g_XMArcEstCoefficients    = { { { +1.5707288f, -0.2121144f, +0.0742610f, -0.0187293f } } };
-XMGLOBALCONST XMVECTORF32 g_XMPiConstants0          = { { { XM_PI, XM_2PI, XM_1DIVPI, XM_1DIV2PI } } };
-XMGLOBALCONST XMVECTORF32 g_XMIdentityR0            = { { { 1.0f, 0.0f, 0.0f, 0.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMIdentityR1            = { { { 0.0f, 1.0f, 0.0f, 0.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMIdentityR2            = { { { 0.0f, 0.0f, 1.0f, 0.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMIdentityR3            = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR0         = { { { -1.0f, 0.0f, 0.0f, 0.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR1         = { { { 0.0f, -1.0f, 0.0f, 0.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR2         = { { { 0.0f, 0.0f, -1.0f, 0.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR3         = { { { 0.0f, 0.0f, 0.0f, -1.0f } } };
-XMGLOBALCONST XMVECTORU32 g_XMNegativeZero          = { { { 0x80000000, 0x80000000, 0x80000000, 0x80000000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMNegate3               = { { { 0x80000000, 0x80000000, 0x80000000, 0x00000000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMMaskXY                = { { { 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMMask3                 = { { { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMMaskX                 = { { { 0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMMaskY                 = { { { 0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMMaskZ                 = { { { 0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMMaskW                 = { { { 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF } } };
-XMGLOBALCONST XMVECTORF32 g_XMOne                   = { { { 1.0f, 1.0f, 1.0f, 1.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMOne3                  = { { { 1.0f, 1.0f, 1.0f, 0.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMZero                  = { { { 0.0f, 0.0f, 0.0f, 0.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMTwo                   = { { { 2.f, 2.f, 2.f, 2.f } } };
-XMGLOBALCONST XMVECTORF32 g_XMFour                  = { { { 4.f, 4.f, 4.f, 4.f } } };
-XMGLOBALCONST XMVECTORF32 g_XMSix                   = { { { 6.f, 6.f, 6.f, 6.f } } };
-XMGLOBALCONST XMVECTORF32 g_XMNegativeOne           = { { { -1.0f, -1.0f, -1.0f, -1.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMOneHalf               = { { { 0.5f, 0.5f, 0.5f, 0.5f } } };
-XMGLOBALCONST XMVECTORF32 g_XMNegativeOneHalf       = { { { -0.5f, -0.5f, -0.5f, -0.5f } } };
-XMGLOBALCONST XMVECTORF32 g_XMNegativeTwoPi         = { { { -XM_2PI, -XM_2PI, -XM_2PI, -XM_2PI } } };
-XMGLOBALCONST XMVECTORF32 g_XMNegativePi            = { { { -XM_PI, -XM_PI, -XM_PI, -XM_PI } } };
-XMGLOBALCONST XMVECTORF32 g_XMHalfPi                = { { { XM_PIDIV2, XM_PIDIV2, XM_PIDIV2, XM_PIDIV2 } } };
-XMGLOBALCONST XMVECTORF32 g_XMPi                    = { { { XM_PI, XM_PI, XM_PI, XM_PI } } };
-XMGLOBALCONST XMVECTORF32 g_XMReciprocalPi          = { { { XM_1DIVPI, XM_1DIVPI, XM_1DIVPI, XM_1DIVPI } } };
-XMGLOBALCONST XMVECTORF32 g_XMTwoPi                 = { { { XM_2PI, XM_2PI, XM_2PI, XM_2PI } } };
-XMGLOBALCONST XMVECTORF32 g_XMReciprocalTwoPi       = { { { XM_1DIV2PI, XM_1DIV2PI, XM_1DIV2PI, XM_1DIV2PI } } };
-XMGLOBALCONST XMVECTORF32 g_XMEpsilon               = { { { 1.192092896e-7f, 1.192092896e-7f, 1.192092896e-7f, 1.192092896e-7f } } };
-XMGLOBALCONST XMVECTORI32 g_XMInfinity              = { { { 0x7F800000, 0x7F800000, 0x7F800000, 0x7F800000 } } };
-XMGLOBALCONST XMVECTORI32 g_XMQNaN                  = { { { 0x7FC00000, 0x7FC00000, 0x7FC00000, 0x7FC00000 } } };
-XMGLOBALCONST XMVECTORI32 g_XMQNaNTest              = { { { 0x007FFFFF, 0x007FFFFF, 0x007FFFFF, 0x007FFFFF } } };
-XMGLOBALCONST XMVECTORI32 g_XMAbsMask               = { { { 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF } } };
-XMGLOBALCONST XMVECTORI32 g_XMFltMin                = { { { 0x00800000, 0x00800000, 0x00800000, 0x00800000 } } };
-XMGLOBALCONST XMVECTORI32 g_XMFltMax                = { { { 0x7F7FFFFF, 0x7F7FFFFF, 0x7F7FFFFF, 0x7F7FFFFF } } };
-XMGLOBALCONST XMVECTORU32 g_XMNegOneMask            = { { { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF } } };
-XMGLOBALCONST XMVECTORU32 g_XMMaskA8R8G8B8          = { { { 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMFlipA8R8G8B8          = { { { 0x00000000, 0x00000000, 0x00000000, 0x80000000 } } };
-XMGLOBALCONST XMVECTORF32 g_XMFixAA8R8G8B8          = { { { 0.0f, 0.0f, 0.0f, float(0x80000000U) } } };
-XMGLOBALCONST XMVECTORF32 g_XMNormalizeA8R8G8B8     = { { { 1.0f / (255.0f*float(0x10000)), 1.0f / (255.0f*float(0x100)), 1.0f / 255.0f, 1.0f / (255.0f*float(0x1000000)) } } };
-XMGLOBALCONST XMVECTORU32 g_XMMaskA2B10G10R10       = { { { 0x000003FF, 0x000FFC00, 0x3FF00000, 0xC0000000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMFlipA2B10G10R10       = { { { 0x00000200, 0x00080000, 0x20000000, 0x80000000 } } };
-XMGLOBALCONST XMVECTORF32 g_XMFixAA2B10G10R10       = { { { -512.0f, -512.0f*float(0x400), -512.0f*float(0x100000), float(0x80000000U) } } };
-XMGLOBALCONST XMVECTORF32 g_XMNormalizeA2B10G10R10  = { { { 1.0f / 511.0f, 1.0f / (511.0f*float(0x400)), 1.0f / (511.0f*float(0x100000)), 1.0f / (3.0f*float(0x40000000)) } } };
-XMGLOBALCONST XMVECTORU32 g_XMMaskX16Y16            = { { { 0x0000FFFF, 0xFFFF0000, 0x00000000, 0x00000000 } } };
-XMGLOBALCONST XMVECTORI32 g_XMFlipX16Y16            = { { { 0x00008000, 0x00000000, 0x00000000, 0x00000000 } } };
-XMGLOBALCONST XMVECTORF32 g_XMFixX16Y16             = { { { -32768.0f, 0.0f, 0.0f, 0.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMNormalizeX16Y16       = { { { 1.0f / 32767.0f, 1.0f / (32767.0f*65536.0f), 0.0f, 0.0f } } };
-XMGLOBALCONST XMVECTORU32 g_XMMaskX16Y16Z16W16      = { { { 0x0000FFFF, 0x0000FFFF, 0xFFFF0000, 0xFFFF0000 } } };
-XMGLOBALCONST XMVECTORI32 g_XMFlipX16Y16Z16W16      = { { { 0x00008000, 0x00008000, 0x00000000, 0x00000000 } } };
-XMGLOBALCONST XMVECTORF32 g_XMFixX16Y16Z16W16       = { { { -32768.0f, -32768.0f, 0.0f, 0.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMNormalizeX16Y16Z16W16 = { { { 1.0f / 32767.0f, 1.0f / 32767.0f, 1.0f / (32767.0f*65536.0f), 1.0f / (32767.0f*65536.0f) } } };
-XMGLOBALCONST XMVECTORF32 g_XMNoFraction            = { { { 8388608.0f, 8388608.0f, 8388608.0f, 8388608.0f } } };
-XMGLOBALCONST XMVECTORI32 g_XMMaskByte              = { { { 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF } } };
-XMGLOBALCONST XMVECTORF32 g_XMNegateX               = { { { -1.0f, 1.0f, 1.0f, 1.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMNegateY               = { { { 1.0f, -1.0f, 1.0f, 1.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMNegateZ               = { { { 1.0f, 1.0f, -1.0f, 1.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMNegateW               = { { { 1.0f, 1.0f, 1.0f, -1.0f } } };
-XMGLOBALCONST XMVECTORU32 g_XMSelect0101            = { { { XM_SELECT_0, XM_SELECT_1, XM_SELECT_0, XM_SELECT_1 } } };
-XMGLOBALCONST XMVECTORU32 g_XMSelect1010            = { { { XM_SELECT_1, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0 } } };
-XMGLOBALCONST XMVECTORI32 g_XMOneHalfMinusEpsilon   = { { { 0x3EFFFFFD, 0x3EFFFFFD, 0x3EFFFFFD, 0x3EFFFFFD } } };
-XMGLOBALCONST XMVECTORU32 g_XMSelect1000            = { { { XM_SELECT_1, XM_SELECT_0, XM_SELECT_0, XM_SELECT_0 } } };
-XMGLOBALCONST XMVECTORU32 g_XMSelect1100            = { { { XM_SELECT_1, XM_SELECT_1, XM_SELECT_0, XM_SELECT_0 } } };
-XMGLOBALCONST XMVECTORU32 g_XMSelect1110            = { { { XM_SELECT_1, XM_SELECT_1, XM_SELECT_1, XM_SELECT_0 } } };
-XMGLOBALCONST XMVECTORU32 g_XMSelect1011            = { { { XM_SELECT_1, XM_SELECT_0, XM_SELECT_1, XM_SELECT_1 } } };
-XMGLOBALCONST XMVECTORF32 g_XMFixupY16              = { { { 1.0f, 1.0f / 65536.0f, 0.0f, 0.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMFixupY16W16           = { { { 1.0f, 1.0f, 1.0f / 65536.0f, 1.0f / 65536.0f } } };
-XMGLOBALCONST XMVECTORU32 g_XMFlipY                 = { { { 0, 0x80000000, 0, 0 } } };
-XMGLOBALCONST XMVECTORU32 g_XMFlipZ                 = { { { 0, 0, 0x80000000, 0 } } };
-XMGLOBALCONST XMVECTORU32 g_XMFlipW                 = { { { 0, 0, 0, 0x80000000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMFlipYZ                = { { { 0, 0x80000000, 0x80000000, 0 } } };
-XMGLOBALCONST XMVECTORU32 g_XMFlipZW                = { { { 0, 0, 0x80000000, 0x80000000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMFlipYW                = { { { 0, 0x80000000, 0, 0x80000000 } } };
-XMGLOBALCONST XMVECTORI32 g_XMMaskDec4              = { { { 0x3FF, 0x3FF << 10, 0x3FF << 20, static_cast<int>(0xC0000000) } } };
-XMGLOBALCONST XMVECTORI32 g_XMXorDec4               = { { { 0x200, 0x200 << 10, 0x200 << 20, 0 } } };
-XMGLOBALCONST XMVECTORF32 g_XMAddUDec4              = { { { 0, 0, 0, 32768.0f*65536.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMAddDec4               = { { { -512.0f, -512.0f*1024.0f, -512.0f*1024.0f*1024.0f, 0 } } };
-XMGLOBALCONST XMVECTORF32 g_XMMulDec4               = { { { 1.0f, 1.0f / 1024.0f, 1.0f / (1024.0f*1024.0f), 1.0f / (1024.0f*1024.0f*1024.0f) } } };
-XMGLOBALCONST XMVECTORU32 g_XMMaskByte4             = { { { 0xFF, 0xFF00, 0xFF0000, 0xFF000000 } } };
-XMGLOBALCONST XMVECTORI32 g_XMXorByte4              = { { { 0x80, 0x8000, 0x800000, 0x00000000 } } };
-XMGLOBALCONST XMVECTORF32 g_XMAddByte4              = { { { -128.0f, -128.0f*256.0f, -128.0f*65536.0f, 0 } } };
-XMGLOBALCONST XMVECTORF32 g_XMFixUnsigned           = { { { 32768.0f*65536.0f, 32768.0f*65536.0f, 32768.0f*65536.0f, 32768.0f*65536.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMMaxInt                = { { { 65536.0f*32768.0f - 128.0f, 65536.0f*32768.0f - 128.0f, 65536.0f*32768.0f - 128.0f, 65536.0f*32768.0f - 128.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMMaxUInt               = { { { 65536.0f*65536.0f - 256.0f, 65536.0f*65536.0f - 256.0f, 65536.0f*65536.0f - 256.0f, 65536.0f*65536.0f - 256.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMUnsignedFix           = { { { 32768.0f*65536.0f, 32768.0f*65536.0f, 32768.0f*65536.0f, 32768.0f*65536.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMsrgbScale             = { { { 12.92f, 12.92f, 12.92f, 1.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMsrgbA                 = { { { 0.055f, 0.055f, 0.055f, 0.0f } } };
-XMGLOBALCONST XMVECTORF32 g_XMsrgbA1                = { { { 1.055f, 1.055f, 1.055f, 1.0f } } };
-XMGLOBALCONST XMVECTORI32 g_XMExponentBias          = { { { 127, 127, 127, 127 } } };
-XMGLOBALCONST XMVECTORI32 g_XMSubnormalExponent     = { { { -126, -126, -126, -126 } } };
-XMGLOBALCONST XMVECTORI32 g_XMNumTrailing           = { { { 23, 23, 23, 23 } } };
-XMGLOBALCONST XMVECTORI32 g_XMMinNormal             = { { { 0x00800000, 0x00800000, 0x00800000, 0x00800000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMNegInfinity           = { { { 0xFF800000, 0xFF800000, 0xFF800000, 0xFF800000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMNegQNaN               = { { { 0xFFC00000, 0xFFC00000, 0xFFC00000, 0xFFC00000 } } };
-XMGLOBALCONST XMVECTORI32 g_XMBin128                = { { { 0x43000000, 0x43000000, 0x43000000, 0x43000000 } } };
-XMGLOBALCONST XMVECTORU32 g_XMBinNeg150             = { { { 0xC3160000, 0xC3160000, 0xC3160000, 0xC3160000 } } };
-XMGLOBALCONST XMVECTORI32 g_XM253                   = { { { 253, 253, 253, 253 } } };
-XMGLOBALCONST XMVECTORF32 g_XMExpEst1               = { { { -6.93147182e-1f, -6.93147182e-1f, -6.93147182e-1f, -6.93147182e-1f } } };
-XMGLOBALCONST XMVECTORF32 g_XMExpEst2               = { { { +2.40226462e-1f, +2.40226462e-1f, +2.40226462e-1f, +2.40226462e-1f } } };
-XMGLOBALCONST XMVECTORF32 g_XMExpEst3               = { { { -5.55036440e-2f, -5.55036440e-2f, -5.55036440e-2f, -5.55036440e-2f } } };
-XMGLOBALCONST XMVECTORF32 g_XMExpEst4               = { { { +9.61597636e-3f, +9.61597636e-3f, +9.61597636e-3f, +9.61597636e-3f } } };
-XMGLOBALCONST XMVECTORF32 g_XMExpEst5               = { { { -1.32823968e-3f, -1.32823968e-3f, -1.32823968e-3f, -1.32823968e-3f } } };
-XMGLOBALCONST XMVECTORF32 g_XMExpEst6               = { { { +1.47491097e-4f, +1.47491097e-4f, +1.47491097e-4f, +1.47491097e-4f } } };
-XMGLOBALCONST XMVECTORF32 g_XMExpEst7               = { { { -1.08635004e-5f, -1.08635004e-5f, -1.08635004e-5f, -1.08635004e-5f } } };
-XMGLOBALCONST XMVECTORF32 g_XMLogEst0               = { { { +1.442693f, +1.442693f, +1.442693f, +1.442693f } } };
-XMGLOBALCONST XMVECTORF32 g_XMLogEst1               = { { { -0.721242f, -0.721242f, -0.721242f, -0.721242f } } };
-XMGLOBALCONST XMVECTORF32 g_XMLogEst2               = { { { +0.479384f, +0.479384f, +0.479384f, +0.479384f } } };
-XMGLOBALCONST XMVECTORF32 g_XMLogEst3               = { { { -0.350295f, -0.350295f, -0.350295f, -0.350295f } } };
-XMGLOBALCONST XMVECTORF32 g_XMLogEst4               = { { { +0.248590f, +0.248590f, +0.248590f, +0.248590f } } };
-XMGLOBALCONST XMVECTORF32 g_XMLogEst5               = { { { -0.145700f, -0.145700f, -0.145700f, -0.145700f } } };
-XMGLOBALCONST XMVECTORF32 g_XMLogEst6               = { { { +0.057148f, +0.057148f, +0.057148f, +0.057148f } } };
-XMGLOBALCONST XMVECTORF32 g_XMLogEst7               = { { { -0.010578f, -0.010578f, -0.010578f, -0.010578f } } };
-XMGLOBALCONST XMVECTORF32 g_XMLgE                   = { { { +1.442695f, +1.442695f, +1.442695f, +1.442695f } } };
-XMGLOBALCONST XMVECTORF32 g_XMInvLgE                = { { { +6.93147182e-1f, +6.93147182e-1f, +6.93147182e-1f, +6.93147182e-1f } } };
-XMGLOBALCONST XMVECTORF32 g_UByteMax                = { { { 255.0f, 255.0f, 255.0f, 255.0f } } };
-XMGLOBALCONST XMVECTORF32 g_ByteMin                 = { { { -127.0f, -127.0f, -127.0f, -127.0f } } };
-XMGLOBALCONST XMVECTORF32 g_ByteMax                 = { { { 127.0f, 127.0f, 127.0f, 127.0f } } };
-XMGLOBALCONST XMVECTORF32 g_ShortMin                = { { { -32767.0f, -32767.0f, -32767.0f, -32767.0f } } };
-XMGLOBALCONST XMVECTORF32 g_ShortMax                = { { { 32767.0f, 32767.0f, 32767.0f, 32767.0f } } };
-XMGLOBALCONST XMVECTORF32 g_UShortMax               = { { { 65535.0f, 65535.0f, 65535.0f, 65535.0f } } };
+constexpr XMVECTORF32 g_XMSinCoefficients0      = { { { -0.16666667f, +0.0083333310f, -0.00019840874f, +2.7525562e-06f } } };
+constexpr XMVECTORF32 g_XMSinCoefficients1      = { { { -2.3889859e-08f, -0.16665852f /*Est1*/, +0.0083139502f /*Est2*/, -0.00018524670f /*Est3*/ } } };
+constexpr XMVECTORF32 g_XMCosCoefficients0      = { { { -0.5f, +0.041666638f, -0.0013888378f, +2.4760495e-05f } } };
+constexpr XMVECTORF32 g_XMCosCoefficients1      = { { { -2.6051615e-07f, -0.49992746f /*Est1*/, +0.041493919f /*Est2*/, -0.0012712436f /*Est3*/ } } };
+constexpr XMVECTORF32 g_XMTanCoefficients0      = { { { 1.0f, 0.333333333f, 0.133333333f, 5.396825397e-2f } } };
+constexpr XMVECTORF32 g_XMTanCoefficients1      = { { { 2.186948854e-2f, 8.863235530e-3f, 3.592128167e-3f, 1.455834485e-3f } } };
+constexpr XMVECTORF32 g_XMTanCoefficients2      = { { { 5.900274264e-4f, 2.391290764e-4f, 9.691537707e-5f, 3.927832950e-5f } } };
+constexpr XMVECTORF32 g_XMArcCoefficients0      = { { { +1.5707963050f, -0.2145988016f, +0.0889789874f, -0.0501743046f } } };
+constexpr XMVECTORF32 g_XMArcCoefficients1      = { { { +0.0308918810f, -0.0170881256f, +0.0066700901f, -0.0012624911f } } };
+constexpr XMVECTORF32 g_XMATanCoefficients0     = { { { -0.3333314528f, +0.1999355085f, -0.1420889944f, +0.1065626393f } } };
+constexpr XMVECTORF32 g_XMATanCoefficients1     = { { { -0.0752896400f, +0.0429096138f, -0.0161657367f, +0.0028662257f } } };
+constexpr XMVECTORF32 g_XMATanEstCoefficients0  = { { { +0.999866f, +0.999866f, +0.999866f, +0.999866f } } };
+constexpr XMVECTORF32 g_XMATanEstCoefficients1  = { { { -0.3302995f, +0.180141f, -0.085133f, +0.0208351f } } };
+constexpr XMVECTORF32 g_XMTanEstCoefficients    = { { { 2.484f, -1.954923183e-1f, 2.467401101f, XM_1DIVPI } } };
+constexpr XMVECTORF32 g_XMArcEstCoefficients    = { { { +1.5707288f, -0.2121144f, +0.0742610f, -0.0187293f } } };
+constexpr XMVECTORF32 g_XMPiConstants0          = { { { XM_PI, XM_2PI, XM_1DIVPI, XM_1DIV2PI } } };
+constexpr XMVECTORF32 g_XMIdentityR0            = { { { 1.0f, 0.0f, 0.0f, 0.0f } } };
+constexpr XMVECTORF32 g_XMIdentityR1            = { { { 0.0f, 1.0f, 0.0f, 0.0f } } };
+constexpr XMVECTORF32 g_XMIdentityR2            = { { { 0.0f, 0.0f, 1.0f, 0.0f } } };
+constexpr XMVECTORF32 g_XMIdentityR3            = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
+constexpr XMVECTORF32 g_XMNegIdentityR0         = { { { -1.0f, 0.0f, 0.0f, 0.0f } } };
+constexpr XMVECTORF32 g_XMNegIdentityR1         = { { { 0.0f, -1.0f, 0.0f, 0.0f } } };
+constexpr XMVECTORF32 g_XMNegIdentityR2         = { { { 0.0f, 0.0f, -1.0f, 0.0f } } };
+constexpr XMVECTORF32 g_XMNegIdentityR3         = { { { 0.0f, 0.0f, 0.0f, -1.0f } } };
+constexpr XMVECTORU32 g_XMNegativeZero          = { { { 0x80000000, 0x80000000, 0x80000000, 0x80000000 } } };
+constexpr XMVECTORU32 g_XMNegate3               = { { { 0x80000000, 0x80000000, 0x80000000, 0x00000000 } } };
+constexpr XMVECTORU32 g_XMMaskXY                = { { { 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000 } } };
+constexpr XMVECTORU32 g_XMMask3                 = { { { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 } } };
+constexpr XMVECTORU32 g_XMMaskX                 = { { { 0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000 } } };
+constexpr XMVECTORU32 g_XMMaskY                 = { { { 0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000 } } };
+constexpr XMVECTORU32 g_XMMaskZ                 = { { { 0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000 } } };
+constexpr XMVECTORU32 g_XMMaskW                 = { { { 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF } } };
+constexpr XMVECTORF32 g_XMOne                   = { { { 1.0f, 1.0f, 1.0f, 1.0f } } };
+constexpr XMVECTORF32 g_XMOne3                  = { { { 1.0f, 1.0f, 1.0f, 0.0f } } };
+constexpr XMVECTORF32 g_XMZero                  = { { { 0.0f, 0.0f, 0.0f, 0.0f } } };
+constexpr XMVECTORF32 g_XMTwo                   = { { { 2.f, 2.f, 2.f, 2.f } } };
+constexpr XMVECTORF32 g_XMFour                  = { { { 4.f, 4.f, 4.f, 4.f } } };
+constexpr XMVECTORF32 g_XMSix                   = { { { 6.f, 6.f, 6.f, 6.f } } };
+constexpr XMVECTORF32 g_XMNegativeOne           = { { { -1.0f, -1.0f, -1.0f, -1.0f } } };
+constexpr XMVECTORF32 g_XMOneHalf               = { { { 0.5f, 0.5f, 0.5f, 0.5f } } };
+constexpr XMVECTORF32 g_XMNegativeOneHalf       = { { { -0.5f, -0.5f, -0.5f, -0.5f } } };
+constexpr XMVECTORF32 g_XMNegativeTwoPi         = { { { -XM_2PI, -XM_2PI, -XM_2PI, -XM_2PI } } };
+constexpr XMVECTORF32 g_XMNegativePi            = { { { -XM_PI, -XM_PI, -XM_PI, -XM_PI } } };
+constexpr XMVECTORF32 g_XMHalfPi                = { { { XM_PIDIV2, XM_PIDIV2, XM_PIDIV2, XM_PIDIV2 } } };
+constexpr XMVECTORF32 g_XMPi                    = { { { XM_PI, XM_PI, XM_PI, XM_PI } } };
+constexpr XMVECTORF32 g_XMReciprocalPi          = { { { XM_1DIVPI, XM_1DIVPI, XM_1DIVPI, XM_1DIVPI } } };
+constexpr XMVECTORF32 g_XMTwoPi                 = { { { XM_2PI, XM_2PI, XM_2PI, XM_2PI } } };
+constexpr XMVECTORF32 g_XMReciprocalTwoPi       = { { { XM_1DIV2PI, XM_1DIV2PI, XM_1DIV2PI, XM_1DIV2PI } } };
+constexpr XMVECTORF32 g_XMEpsilon               = { { { 1.192092896e-7f, 1.192092896e-7f, 1.192092896e-7f, 1.192092896e-7f } } };
+constexpr XMVECTORI32 g_XMInfinity              = { { { 0x7F800000, 0x7F800000, 0x7F800000, 0x7F800000 } } };
+constexpr XMVECTORI32 g_XMQNaN                  = { { { 0x7FC00000, 0x7FC00000, 0x7FC00000, 0x7FC00000 } } };
+constexpr XMVECTORI32 g_XMQNaNTest              = { { { 0x007FFFFF, 0x007FFFFF, 0x007FFFFF, 0x007FFFFF } } };
+constexpr XMVECTORI32 g_XMAbsMask               = { { { 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF } } };
+constexpr XMVECTORI32 g_XMFltMin                = { { { 0x00800000, 0x00800000, 0x00800000, 0x00800000 } } };
+constexpr XMVECTORI32 g_XMFltMax                = { { { 0x7F7FFFFF, 0x7F7FFFFF, 0x7F7FFFFF, 0x7F7FFFFF } } };
+constexpr XMVECTORU32 g_XMNegOneMask            = { { { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF } } };
+constexpr XMVECTORU32 g_XMMaskA8R8G8B8          = { { { 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000 } } };
+constexpr XMVECTORU32 g_XMFlipA8R8G8B8          = { { { 0x00000000, 0x00000000, 0x00000000, 0x80000000 } } };
+constexpr XMVECTORF32 g_XMFixAA8R8G8B8          = { { { 0.0f, 0.0f, 0.0f, float(0x80000000U) } } };
+constexpr XMVECTORF32 g_XMNormalizeA8R8G8B8     = { { { 1.0f / (255.0f*float(0x10000)), 1.0f / (255.0f*float(0x100)), 1.0f / 255.0f, 1.0f / (255.0f*float(0x1000000)) } } };
+constexpr XMVECTORU32 g_XMMaskA2B10G10R10       = { { { 0x000003FF, 0x000FFC00, 0x3FF00000, 0xC0000000 } } };
+constexpr XMVECTORU32 g_XMFlipA2B10G10R10       = { { { 0x00000200, 0x00080000, 0x20000000, 0x80000000 } } };
+constexpr XMVECTORF32 g_XMFixAA2B10G10R10       = { { { -512.0f, -512.0f*float(0x400), -512.0f*float(0x100000), float(0x80000000U) } } };
+constexpr XMVECTORF32 g_XMNormalizeA2B10G10R10  = { { { 1.0f / 511.0f, 1.0f / (511.0f*float(0x400)), 1.0f / (511.0f*float(0x100000)), 1.0f / (3.0f*float(0x40000000)) } } };
+constexpr XMVECTORU32 g_XMMaskX16Y16            = { { { 0x0000FFFF, 0xFFFF0000, 0x00000000, 0x00000000 } } };
+constexpr XMVECTORI32 g_XMFlipX16Y16            = { { { 0x00008000, 0x00000000, 0x00000000, 0x00000000 } } };
+constexpr XMVECTORF32 g_XMFixX16Y16             = { { { -32768.0f, 0.0f, 0.0f, 0.0f } } };
+constexpr XMVECTORF32 g_XMNormalizeX16Y16       = { { { 1.0f / 32767.0f, 1.0f / (32767.0f*65536.0f), 0.0f, 0.0f } } };
+constexpr XMVECTORU32 g_XMMaskX16Y16Z16W16      = { { { 0x0000FFFF, 0x0000FFFF, 0xFFFF0000, 0xFFFF0000 } } };
+constexpr XMVECTORI32 g_XMFlipX16Y16Z16W16      = { { { 0x00008000, 0x00008000, 0x00000000, 0x00000000 } } };
+constexpr XMVECTORF32 g_XMFixX16Y16Z16W16       = { { { -32768.0f, -32768.0f, 0.0f, 0.0f } } };
+constexpr XMVECTORF32 g_XMNormalizeX16Y16Z16W16 = { { { 1.0f / 32767.0f, 1.0f / 32767.0f, 1.0f / (32767.0f*65536.0f), 1.0f / (32767.0f*65536.0f) } } };
+constexpr XMVECTORF32 g_XMNoFraction            = { { { 8388608.0f, 8388608.0f, 8388608.0f, 8388608.0f } } };
+constexpr XMVECTORI32 g_XMMaskByte              = { { { 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF } } };
+constexpr XMVECTORF32 g_XMNegateX               = { { { -1.0f, 1.0f, 1.0f, 1.0f } } };
+constexpr XMVECTORF32 g_XMNegateY               = { { { 1.0f, -1.0f, 1.0f, 1.0f } } };
+constexpr XMVECTORF32 g_XMNegateZ               = { { { 1.0f, 1.0f, -1.0f, 1.0f } } };
+constexpr XMVECTORF32 g_XMNegateW               = { { { 1.0f, 1.0f, 1.0f, -1.0f } } };
+constexpr XMVECTORU32 g_XMSelect0101            = { { { XM_SELECT_0, XM_SELECT_1, XM_SELECT_0, XM_SELECT_1 } } };
+constexpr XMVECTORU32 g_XMSelect1010            = { { { XM_SELECT_1, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0 } } };
+constexpr XMVECTORI32 g_XMOneHalfMinusEpsilon   = { { { 0x3EFFFFFD, 0x3EFFFFFD, 0x3EFFFFFD, 0x3EFFFFFD } } };
+constexpr XMVECTORU32 g_XMSelect1000            = { { { XM_SELECT_1, XM_SELECT_0, XM_SELECT_0, XM_SELECT_0 } } };
+constexpr XMVECTORU32 g_XMSelect1100            = { { { XM_SELECT_1, XM_SELECT_1, XM_SELECT_0, XM_SELECT_0 } } };
+constexpr XMVECTORU32 g_XMSelect1110            = { { { XM_SELECT_1, XM_SELECT_1, XM_SELECT_1, XM_SELECT_0 } } };
+constexpr XMVECTORU32 g_XMSelect1011            = { { { XM_SELECT_1, XM_SELECT_0, XM_SELECT_1, XM_SELECT_1 } } };
+constexpr XMVECTORF32 g_XMFixupY16              = { { { 1.0f, 1.0f / 65536.0f, 0.0f, 0.0f } } };
+constexpr XMVECTORF32 g_XMFixupY16W16           = { { { 1.0f, 1.0f, 1.0f / 65536.0f, 1.0f / 65536.0f } } };
+constexpr XMVECTORU32 g_XMFlipY                 = { { { 0, 0x80000000, 0, 0 } } };
+constexpr XMVECTORU32 g_XMFlipZ                 = { { { 0, 0, 0x80000000, 0 } } };
+constexpr XMVECTORU32 g_XMFlipW                 = { { { 0, 0, 0, 0x80000000 } } };
+constexpr XMVECTORU32 g_XMFlipYZ                = { { { 0, 0x80000000, 0x80000000, 0 } } };
+constexpr XMVECTORU32 g_XMFlipZW                = { { { 0, 0, 0x80000000, 0x80000000 } } };
+constexpr XMVECTORU32 g_XMFlipYW                = { { { 0, 0x80000000, 0, 0x80000000 } } };
+constexpr XMVECTORI32 g_XMMaskDec4              = { { { 0x3FF, 0x3FF << 10, 0x3FF << 20, static_cast<int>(0xC0000000) } } };
+constexpr XMVECTORI32 g_XMXorDec4               = { { { 0x200, 0x200 << 10, 0x200 << 20, 0 } } };
+constexpr XMVECTORF32 g_XMAddUDec4              = { { { 0, 0, 0, 32768.0f*65536.0f } } };
+constexpr XMVECTORF32 g_XMAddDec4               = { { { -512.0f, -512.0f*1024.0f, -512.0f*1024.0f*1024.0f, 0 } } };
+constexpr XMVECTORF32 g_XMMulDec4               = { { { 1.0f, 1.0f / 1024.0f, 1.0f / (1024.0f*1024.0f), 1.0f / (1024.0f*1024.0f*1024.0f) } } };
+constexpr XMVECTORU32 g_XMMaskByte4             = { { { 0xFF, 0xFF00, 0xFF0000, 0xFF000000 } } };
+constexpr XMVECTORI32 g_XMXorByte4              = { { { 0x80, 0x8000, 0x800000, 0x00000000 } } };
+constexpr XMVECTORF32 g_XMAddByte4              = { { { -128.0f, -128.0f*256.0f, -128.0f*65536.0f, 0 } } };
+constexpr XMVECTORF32 g_XMFixUnsigned           = { { { 32768.0f*65536.0f, 32768.0f*65536.0f, 32768.0f*65536.0f, 32768.0f*65536.0f } } };
+constexpr XMVECTORF32 g_XMMaxInt                = { { { 65536.0f*32768.0f - 128.0f, 65536.0f*32768.0f - 128.0f, 65536.0f*32768.0f - 128.0f, 65536.0f*32768.0f - 128.0f } } };
+constexpr XMVECTORF32 g_XMMaxUInt               = { { { 65536.0f*65536.0f - 256.0f, 65536.0f*65536.0f - 256.0f, 65536.0f*65536.0f - 256.0f, 65536.0f*65536.0f - 256.0f } } };
+constexpr XMVECTORF32 g_XMUnsignedFix           = { { { 32768.0f*65536.0f, 32768.0f*65536.0f, 32768.0f*65536.0f, 32768.0f*65536.0f } } };
+constexpr XMVECTORF32 g_XMsrgbScale             = { { { 12.92f, 12.92f, 12.92f, 1.0f } } };
+constexpr XMVECTORF32 g_XMsrgbA                 = { { { 0.055f, 0.055f, 0.055f, 0.0f } } };
+constexpr XMVECTORF32 g_XMsrgbA1                = { { { 1.055f, 1.055f, 1.055f, 1.0f } } };
+constexpr XMVECTORI32 g_XMExponentBias          = { { { 127, 127, 127, 127 } } };
+constexpr XMVECTORI32 g_XMSubnormalExponent     = { { { -126, -126, -126, -126 } } };
+constexpr XMVECTORI32 g_XMNumTrailing           = { { { 23, 23, 23, 23 } } };
+constexpr XMVECTORI32 g_XMMinNormal             = { { { 0x00800000, 0x00800000, 0x00800000, 0x00800000 } } };
+constexpr XMVECTORU32 g_XMNegInfinity           = { { { 0xFF800000, 0xFF800000, 0xFF800000, 0xFF800000 } } };
+constexpr XMVECTORU32 g_XMNegQNaN               = { { { 0xFFC00000, 0xFFC00000, 0xFFC00000, 0xFFC00000 } } };
+constexpr XMVECTORI32 g_XMBin128                = { { { 0x43000000, 0x43000000, 0x43000000, 0x43000000 } } };
+constexpr XMVECTORU32 g_XMBinNeg150             = { { { 0xC3160000, 0xC3160000, 0xC3160000, 0xC3160000 } } };
+constexpr XMVECTORI32 g_XM253                   = { { { 253, 253, 253, 253 } } };
+constexpr XMVECTORF32 g_XMExpEst1               = { { { -6.93147182e-1f, -6.93147182e-1f, -6.93147182e-1f, -6.93147182e-1f } } };
+constexpr XMVECTORF32 g_XMExpEst2               = { { { +2.40226462e-1f, +2.40226462e-1f, +2.40226462e-1f, +2.40226462e-1f } } };
+constexpr XMVECTORF32 g_XMExpEst3               = { { { -5.55036440e-2f, -5.55036440e-2f, -5.55036440e-2f, -5.55036440e-2f } } };
+constexpr XMVECTORF32 g_XMExpEst4               = { { { +9.61597636e-3f, +9.61597636e-3f, +9.61597636e-3f, +9.61597636e-3f } } };
+constexpr XMVECTORF32 g_XMExpEst5               = { { { -1.32823968e-3f, -1.32823968e-3f, -1.32823968e-3f, -1.32823968e-3f } } };
+constexpr XMVECTORF32 g_XMExpEst6               = { { { +1.47491097e-4f, +1.47491097e-4f, +1.47491097e-4f, +1.47491097e-4f } } };
+constexpr XMVECTORF32 g_XMExpEst7               = { { { -1.08635004e-5f, -1.08635004e-5f, -1.08635004e-5f, -1.08635004e-5f } } };
+constexpr XMVECTORF32 g_XMLogEst0               = { { { +1.442693f, +1.442693f, +1.442693f, +1.442693f } } };
+constexpr XMVECTORF32 g_XMLogEst1               = { { { -0.721242f, -0.721242f, -0.721242f, -0.721242f } } };
+constexpr XMVECTORF32 g_XMLogEst2               = { { { +0.479384f, +0.479384f, +0.479384f, +0.479384f } } };
+constexpr XMVECTORF32 g_XMLogEst3               = { { { -0.350295f, -0.350295f, -0.350295f, -0.350295f } } };
+constexpr XMVECTORF32 g_XMLogEst4               = { { { +0.248590f, +0.248590f, +0.248590f, +0.248590f } } };
+constexpr XMVECTORF32 g_XMLogEst5               = { { { -0.145700f, -0.145700f, -0.145700f, -0.145700f } } };
+constexpr XMVECTORF32 g_XMLogEst6               = { { { +0.057148f, +0.057148f, +0.057148f, +0.057148f } } };
+constexpr XMVECTORF32 g_XMLogEst7               = { { { -0.010578f, -0.010578f, -0.010578f, -0.010578f } } };
+constexpr XMVECTORF32 g_XMLgE                   = { { { +1.442695f, +1.442695f, +1.442695f, +1.442695f } } };
+constexpr XMVECTORF32 g_XMInvLgE                = { { { +6.93147182e-1f, +6.93147182e-1f, +6.93147182e-1f, +6.93147182e-1f } } };
+constexpr XMVECTORF32 g_UByteMax                = { { { 255.0f, 255.0f, 255.0f, 255.0f } } };
+constexpr XMVECTORF32 g_ByteMin                 = { { { -127.0f, -127.0f, -127.0f, -127.0f } } };
+constexpr XMVECTORF32 g_ByteMax                 = { { { 127.0f, 127.0f, 127.0f, 127.0f } } };
+constexpr XMVECTORF32 g_ShortMin                = { { { -32767.0f, -32767.0f, -32767.0f, -32767.0f } } };
+constexpr XMVECTORF32 g_ShortMax                = { { { 32767.0f, 32767.0f, 32767.0f, 32767.0f } } };
+constexpr XMVECTORF32 g_UShortMax               = { { { 65535.0f, 65535.0f, 65535.0f, 65535.0f } } };
 
 /****************************************************************************
  *

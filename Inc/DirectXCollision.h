@@ -54,7 +54,7 @@ struct BoundingSphere
     BoundingSphere(BoundingSphere&&) = default;
     BoundingSphere& operator=(BoundingSphere&&) = default;
 
-    XM_CONSTEXPR BoundingSphere( _In_ const XMFLOAT3& center, _In_ float radius )
+    constexpr BoundingSphere( _In_ const XMFLOAT3& center, _In_ float radius )
         : Center(center), Radius(radius) {}
 
     // Methods
@@ -118,7 +118,7 @@ struct BoundingBox
     BoundingBox(BoundingBox&&) = default;
     BoundingBox& operator=(BoundingBox&&) = default;
 
-    XM_CONSTEXPR BoundingBox( _In_ const XMFLOAT3& center, _In_ const XMFLOAT3& extents )
+    constexpr BoundingBox( _In_ const XMFLOAT3& center, _In_ const XMFLOAT3& extents )
         : Center(center), Extents(extents) {}
 
     // Methods
@@ -183,7 +183,7 @@ struct BoundingOrientedBox
     BoundingOrientedBox(BoundingOrientedBox&&) = default;
     BoundingOrientedBox& operator=(BoundingOrientedBox&&) = default;
 
-    XM_CONSTEXPR BoundingOrientedBox( _In_ const XMFLOAT3& _Center, _In_ const XMFLOAT3& _Extents, _In_ const XMFLOAT4& _Orientation )
+    constexpr BoundingOrientedBox( _In_ const XMFLOAT3& _Center, _In_ const XMFLOAT3& _Extents, _In_ const XMFLOAT4& _Orientation )
         : Center(_Center), Extents(_Extents), Orientation(_Orientation) {}
 
     // Methods
@@ -252,7 +252,7 @@ struct BoundingFrustum
     BoundingFrustum(BoundingFrustum&&) = default;
     BoundingFrustum& operator=(BoundingFrustum&&) = default;
 
-    XM_CONSTEXPR BoundingFrustum( _In_ const XMFLOAT3& _Origin, _In_ const XMFLOAT4& _Orientation,
+    constexpr BoundingFrustum( _In_ const XMFLOAT3& _Origin, _In_ const XMFLOAT4& _Orientation,
                      _In_ float _RightSlope, _In_ float _LeftSlope, _In_ float _TopSlope, _In_ float _BottomSlope,
                      _In_ float _Near, _In_ float _Far )
         : Origin(_Origin), Orientation(_Orientation),

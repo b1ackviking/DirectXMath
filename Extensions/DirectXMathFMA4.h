@@ -14,6 +14,9 @@
 #endif
 
 #include <ammintrin.h>
+#ifdef __GNUC__
+#include <x86intrin.h>
+#endif
 
 #include <DirectXMath.h>
 
@@ -30,7 +33,7 @@ inline bool XMVerifyFMA4Support()
 
    // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
    int CPUInfo[4] = {-1};
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
    __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
    __cpuid(CPUInfo, 0);
@@ -39,7 +42,7 @@ inline bool XMVerifyFMA4Support()
    if ( CPUInfo[0] < 1  )
        return false;
 
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
    __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
    __cpuid(CPUInfo, 1);
@@ -49,7 +52,7 @@ inline bool XMVerifyFMA4Support()
     if ( (CPUInfo[2] & 0x18000000) != 0x18000000 )
         return false;
 
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
     __cpuid(0x80000000, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuid(CPUInfo, 0x80000000);
@@ -69,8 +72,8 @@ inline bool XMVerifyFMA4Support()
 
 inline XMVECTOR XM_CALLCONV XMVectorMultiplyAdd
 (
-    FXMVECTOR V1, 
-    FXMVECTOR V2, 
+    FXMVECTOR V1,
+    FXMVECTOR V2,
     FXMVECTOR V3
 )
 {
@@ -79,8 +82,8 @@ inline XMVECTOR XM_CALLCONV XMVectorMultiplyAdd
 
 inline XMVECTOR XM_CALLCONV XMVectorNegativeMultiplySubtract
 (
-    FXMVECTOR V1, 
-    FXMVECTOR V2, 
+    FXMVECTOR V1,
+    FXMVECTOR V2,
     FXMVECTOR V3
 )
 {
@@ -94,7 +97,7 @@ inline XMVECTOR XM_CALLCONV XMVectorNegativeMultiplySubtract
 
 inline XMVECTOR XM_CALLCONV XMVector2Transform
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -107,7 +110,7 @@ inline XMVECTOR XM_CALLCONV XMVector2Transform
 
 inline XMVECTOR XM_CALLCONV XMVector2TransformCoord
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -122,7 +125,7 @@ inline XMVECTOR XM_CALLCONV XMVector2TransformCoord
 
 inline XMVECTOR XM_CALLCONV XMVector2TransformNormal
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -140,7 +143,7 @@ inline XMVECTOR XM_CALLCONV XMVector2TransformNormal
 
 inline XMVECTOR XM_CALLCONV XMVector3Transform
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -155,7 +158,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Transform
 
 inline XMVECTOR XM_CALLCONV XMVector3TransformCoord
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -172,7 +175,7 @@ inline XMVECTOR XM_CALLCONV XMVector3TransformCoord
 
 inline XMVECTOR XM_CALLCONV XMVector3TransformNormal
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -189,15 +192,15 @@ XMMATRIX XM_CALLCONV XMMatrixMultiply(CXMMATRIX M1, CXMMATRIX M2);
 
 inline XMVECTOR XM_CALLCONV XMVector3Project
 (
-    FXMVECTOR V, 
-    float    ViewportX, 
-    float    ViewportY, 
-    float    ViewportWidth, 
-    float    ViewportHeight, 
-    float    ViewportMinZ, 
-    float    ViewportMaxZ, 
-    CXMMATRIX Projection, 
-    CXMMATRIX View, 
+    FXMVECTOR V,
+    float    ViewportX,
+    float    ViewportY,
+    float    ViewportWidth,
+    float    ViewportHeight,
+    float    ViewportMinZ,
+    float    ViewportMaxZ,
+    CXMMATRIX Projection,
+    CXMMATRIX View,
     CXMMATRIX World
 )
 {
@@ -219,15 +222,15 @@ inline XMVECTOR XM_CALLCONV XMVector3Project
 
 inline XMVECTOR XM_CALLCONV XMVector3Unproject
 (
-    FXMVECTOR V, 
-    float     ViewportX, 
-    float     ViewportY, 
-    float     ViewportWidth, 
-    float     ViewportHeight, 
-    float     ViewportMinZ, 
-    float     ViewportMaxZ, 
-    CXMMATRIX Projection, 
-    CXMMATRIX View, 
+    FXMVECTOR V,
+    float     ViewportX,
+    float     ViewportY,
+    float     ViewportWidth,
+    float     ViewportHeight,
+    float     ViewportMinZ,
+    float     ViewportMaxZ,
+    CXMMATRIX Projection,
+    CXMMATRIX View,
     CXMMATRIX World
 )
 {
@@ -255,7 +258,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Unproject
 
 inline XMVECTOR XM_CALLCONV XMVector4Transform
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -277,7 +280,7 @@ inline XMVECTOR XM_CALLCONV XMVector4Transform
 
 inline XMMATRIX XM_CALLCONV XMMatrixMultiply
 (
-    CXMMATRIX M1, 
+    CXMMATRIX M1,
     CXMMATRIX M2
 )
 {
@@ -331,7 +334,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
 
 inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
 (
-    FXMMATRIX M1, 
+    FXMMATRIX M1,
     CXMMATRIX M2
 )
 {

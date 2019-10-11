@@ -29,7 +29,7 @@ inline bool XMVerifyAVX2Support()
 
     // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
     int CPUInfo[4] = {-1};
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
     __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuid(CPUInfo, 0);
@@ -38,7 +38,7 @@ inline bool XMVerifyAVX2Support()
     if ( CPUInfo[0] < 7  )
         return false;
 
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
     __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuid(CPUInfo, 1);
@@ -48,7 +48,7 @@ inline bool XMVerifyAVX2Support()
     if ( (CPUInfo[2] & 0x38081001) != 0x38081001 )
         return false;
 
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
     __cpuid_count(7, 0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuidex(CPUInfo, 7, 0);
@@ -89,8 +89,8 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatW( FXMVECTOR V )
 
 inline XMVECTOR XM_CALLCONV XMVectorMultiplyAdd
 (
-    FXMVECTOR V1, 
-    FXMVECTOR V2, 
+    FXMVECTOR V1,
+    FXMVECTOR V2,
     FXMVECTOR V3
 )
 {
@@ -99,8 +99,8 @@ inline XMVECTOR XM_CALLCONV XMVectorMultiplyAdd
 
 inline XMVECTOR XM_CALLCONV XMVectorNegativeMultiplySubtract
 (
-    FXMVECTOR V1, 
-    FXMVECTOR V2, 
+    FXMVECTOR V1,
+    FXMVECTOR V2,
     FXMVECTOR V3
 )
 {
@@ -124,9 +124,9 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute( FXMVECTOR V1, FXMVECTOR V2, uint32_
 
     static const XMVECTORU32 three = { { { 3, 3, 3, 3 } } };
 
-    __declspec(align(16)) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
+    alignas(16) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
     __m128i vControl = _mm_load_si128( reinterpret_cast<const __m128i *>(&elem[0]) );
-    
+
     __m128i vSelect = _mm_cmpgt_epi32( vControl, three );
     vControl = _mm_castps_si128( _mm_and_ps( _mm_castsi128_ps( vControl ), three ) );
 
@@ -167,7 +167,7 @@ inline XMVECTOR XM_CALLCONV XMVectorRotateRight(FXMVECTOR V, uint32_t Elements)
 
 inline XMVECTOR XM_CALLCONV XMVector2Transform
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -180,7 +180,7 @@ inline XMVECTOR XM_CALLCONV XMVector2Transform
 
 inline XMVECTOR XM_CALLCONV XMVector2TransformCoord
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -195,7 +195,7 @@ inline XMVECTOR XM_CALLCONV XMVector2TransformCoord
 
 inline XMVECTOR XM_CALLCONV XMVector2TransformNormal
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -213,7 +213,7 @@ inline XMVECTOR XM_CALLCONV XMVector2TransformNormal
 
 inline XMVECTOR XM_CALLCONV XMVector3Transform
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -228,7 +228,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Transform
 
 inline XMVECTOR XM_CALLCONV XMVector3TransformCoord
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -245,7 +245,7 @@ inline XMVECTOR XM_CALLCONV XMVector3TransformCoord
 
 inline XMVECTOR XM_CALLCONV XMVector3TransformNormal
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -262,15 +262,15 @@ XMMATRIX XM_CALLCONV XMMatrixMultiply(CXMMATRIX M1, CXMMATRIX M2);
 
 inline XMVECTOR XM_CALLCONV XMVector3Project
 (
-    FXMVECTOR V, 
-    float    ViewportX, 
-    float    ViewportY, 
-    float    ViewportWidth, 
-    float    ViewportHeight, 
-    float    ViewportMinZ, 
-    float    ViewportMaxZ, 
-    CXMMATRIX Projection, 
-    CXMMATRIX View, 
+    FXMVECTOR V,
+    float    ViewportX,
+    float    ViewportY,
+    float    ViewportWidth,
+    float    ViewportHeight,
+    float    ViewportMinZ,
+    float    ViewportMaxZ,
+    CXMMATRIX Projection,
+    CXMMATRIX View,
     CXMMATRIX World
 )
 {
@@ -292,15 +292,15 @@ inline XMVECTOR XM_CALLCONV XMVector3Project
 
 inline XMVECTOR XM_CALLCONV XMVector3Unproject
 (
-    FXMVECTOR V, 
-    float     ViewportX, 
-    float     ViewportY, 
-    float     ViewportWidth, 
-    float     ViewportHeight, 
-    float     ViewportMinZ, 
-    float     ViewportMaxZ, 
-    CXMMATRIX Projection, 
-    CXMMATRIX View, 
+    FXMVECTOR V,
+    float     ViewportX,
+    float     ViewportY,
+    float     ViewportWidth,
+    float     ViewportHeight,
+    float     ViewportMinZ,
+    float     ViewportMaxZ,
+    CXMMATRIX Projection,
+    CXMMATRIX View,
     CXMMATRIX World
 )
 {
@@ -328,7 +328,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Unproject
 
 inline XMVECTOR XM_CALLCONV XMVector4Transform
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     CXMMATRIX M
 )
 {
@@ -350,7 +350,7 @@ inline XMVECTOR XM_CALLCONV XMVector4Transform
 
 inline XMMATRIX XM_CALLCONV XMMatrixMultiply
 (
-    CXMMATRIX M1, 
+    CXMMATRIX M1,
     CXMMATRIX M2
 )
 {
@@ -404,7 +404,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
 
 inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
 (
-    FXMMATRIX M1, 
+    FXMMATRIX M1,
     CXMMATRIX M2
 )
 {
@@ -507,13 +507,13 @@ namespace Internal
     // Fast path for permutes that only read from the first vector.
     template<uint32_t Shuffle> struct PermuteHelper<Shuffle, false, false, false, false>
     {
-        static XMVECTOR XM_CALLCONV Permute(FXMVECTOR v1, FXMVECTOR v2) { (v2); return _mm_permute_ps(v1, Shuffle); }
+        static XMVECTOR XM_CALLCONV Permute(FXMVECTOR v1, FXMVECTOR) { return _mm_permute_ps(v1, Shuffle); }
     };
 
     // Fast path for permutes that only read from the second vector.
     template<uint32_t Shuffle> struct PermuteHelper<Shuffle, true, true, true, true>
     {
-        static XMVECTOR XM_CALLCONV Permute(FXMVECTOR v1, FXMVECTOR v2){ (v1); return _mm_permute_ps(v2, Shuffle); }
+        static XMVECTOR XM_CALLCONV Permute(FXMVECTOR, FXMVECTOR v2){ return _mm_permute_ps(v2, Shuffle); }
     };
 
     // Fast path for permutes that read XY from the first vector, ZW from the second.
@@ -635,10 +635,10 @@ inline PackedVector::HALF XMConvertFloatToHalf( float Value )
 
 inline float* XMConvertHalfToFloatStream
 (
-    _Out_writes_bytes_(sizeof(float)+OutputStride*(HalfCount-1)) float* pOutputStream, 
-     _In_ size_t      OutputStride, 
-    _In_reads_bytes_(2+InputStride*(HalfCount-1)) const PackedVector::HALF* pInputStream, 
-    _In_ size_t      InputStride, 
+    _Out_writes_bytes_(sizeof(float)+OutputStride*(HalfCount-1)) float* pOutputStream,
+     _In_ size_t      OutputStride,
+    _In_reads_bytes_(2+InputStride*(HalfCount-1)) const PackedVector::HALF* pInputStream,
+    _In_ size_t      InputStride,
     _In_ size_t      HalfCount
 )
 {
@@ -808,7 +808,7 @@ inline float* XMConvertHalfToFloatStream
     {
         *reinterpret_cast<float*>(pFloat) = XMConvertHalfToFloat(reinterpret_cast<const HALF*>(pHalf)[0]);
         pHalf += InputStride;
-        pFloat += OutputStride; 
+        pFloat += OutputStride;
     }
 
     return pOutputStream;
@@ -817,10 +817,10 @@ inline float* XMConvertHalfToFloatStream
 
 inline PackedVector::HALF* XMConvertFloatToHalfStream
 (
-    _Out_writes_bytes_(2+OutputStride*(FloatCount-1)) PackedVector::HALF* pOutputStream, 
-    _In_ size_t       OutputStride, 
-    _In_reads_bytes_(sizeof(float)+InputStride*(FloatCount-1)) const float* pInputStream, 
-    _In_ size_t       InputStride, 
+    _Out_writes_bytes_(2+OutputStride*(FloatCount-1)) PackedVector::HALF* pOutputStream,
+    _In_ size_t       OutputStride,
+    _In_reads_bytes_(sizeof(float)+InputStride*(FloatCount-1)) const float* pInputStream,
+    _In_ size_t       InputStride,
     _In_ size_t       FloatCount
 )
 {
@@ -987,7 +987,7 @@ inline PackedVector::HALF* XMConvertFloatToHalfStream
     for (; i < FloatCount; ++i)
     {
         *reinterpret_cast<HALF*>(pHalf) = XMConvertFloatToHalf(reinterpret_cast<const float*>(pFloat)[0]);
-        pFloat += InputStride; 
+        pFloat += InputStride;
         pHalf += OutputStride;
     }
 

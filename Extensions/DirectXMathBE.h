@@ -20,7 +20,7 @@ namespace DirectX
 
 inline XMVECTOR XM_CALLCONV XMVectorEndian
 (
-    FXMVECTOR V 
+    FXMVECTOR V
 )
 {
 #if defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
@@ -59,7 +59,7 @@ inline bool XMVerifySSSE3Support()
 
     // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
     int CPUInfo[4] = { -1 };
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
     __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuid(CPUInfo, 0);
@@ -68,7 +68,7 @@ inline bool XMVerifySSSE3Support()
     if ( CPUInfo[0] < 1  )
         return false;
 
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
     __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuid(CPUInfo, 1);
@@ -80,11 +80,11 @@ inline bool XMVerifySSSE3Support()
 
 inline XMVECTOR XM_CALLCONV XMVectorEndian
 (
-    FXMVECTOR V 
+    FXMVECTOR V
 )
 {
     static const XMVECTORU32 idx = { { { 0x00010203u, 0x04050607u, 0x08090A0Bu, 0x0C0D0E0Fu } } };
-   
+
     __m128i Result = _mm_shuffle_epi8( _mm_castps_si128(V), idx );
     return _mm_castsi128_ps( Result );
 }

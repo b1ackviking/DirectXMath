@@ -26,6 +26,10 @@
 
 #include <string.h>
 
+#ifndef _WIN32
+#define memcpy_s(d,ds,s,c) memcpy(d,s,c)
+#endif
+
 #pragma warning(push)
 #pragma warning(disable: 4328 4640 6001 6262)
 
@@ -110,8 +114,8 @@ namespace XDSP
         XMVECTOR i1L = XMVectorSwizzle<0,0,1,1>( i1 );
         XMVECTOR i1H = XMVectorSwizzle<2,2,3,3>( i1 );
 
-        XMVECTOR rTemp = XMVectorMultiplyAdd( r1H, vDFT4SignBits1, r1L );  
-        XMVECTOR iTemp = XMVectorMultiplyAdd( i1H, vDFT4SignBits1, i1L ); 
+        XMVECTOR rTemp = XMVectorMultiplyAdd( r1H, vDFT4SignBits1, r1L );
+        XMVECTOR iTemp = XMVectorMultiplyAdd( i1H, vDFT4SignBits1, i1L );
 
         // calculating Result
         XMVECTOR rZrWiZiW = XMVectorPermute<2,3,6,7>(rTemp,iTemp);  // [rTempZ|rTempW|iTempZ|iTempW]
@@ -124,7 +128,7 @@ namespace XDSP
         XMVECTOR iTempL = XMVectorSwizzle<0,1,0,1>(iTemp);
 
         r1 = XMVectorMultiplyAdd( rZiWrZiW, vDFT4SignBits2, rTempL );
-        i1 = XMVectorMultiplyAdd( iZrWiZrW, vDFT4SignBits3, iTempL );                
+        i1 = XMVectorMultiplyAdd( iZrWiZrW, vDFT4SignBits3, iTempL );
     }
 
     //----------------------------------------------------------------------------------
